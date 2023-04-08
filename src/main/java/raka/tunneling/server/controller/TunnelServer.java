@@ -33,9 +33,12 @@ public class TunnelServer {
 	@Value("${tunneling.server.enabled}")
 	boolean serverEnabled;
 	
-	private void checkEnabled() {
+	private void checkEnabled() throws InterruptedException {
 		if(!serverEnabled)
+		{
+			Thread.sleep(20000);
 			throw new TunnelException("Server not enabled");
+		}
 	}
 
 	@PostMapping("/port/")
