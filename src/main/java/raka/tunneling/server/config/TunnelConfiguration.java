@@ -2,10 +2,12 @@ package raka.tunneling.server.config;
 
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
+
 import lombok.Getter;
 import lombok.Setter;
 
