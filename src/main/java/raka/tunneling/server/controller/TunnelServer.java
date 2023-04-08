@@ -33,10 +33,15 @@ public class TunnelServer {
 	@Value("${tunneling.server.enabled}")
 	boolean serverEnabled;
 	
-	private void checkEnabled() throws InterruptedException {
+	private void checkEnabled() {
 		if(!serverEnabled)
 		{
-			Thread.sleep(20000);
+			try {
+				Thread.sleep(20000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			throw new TunnelException("Server not enabled");
 		}
 	}
