@@ -33,7 +33,14 @@ public class TunnelService {
 	
 	public void validateRequest(Request r) {
 		if(!config.getToken().equals(r.getToken()))
+		{
+			try {
+				Thread.sleep(20000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			throw new TunnelException("Invalid token");
+		}
 	}
 	
 	public OpenResponse openPort(OpenRequest command) throws IOException{
