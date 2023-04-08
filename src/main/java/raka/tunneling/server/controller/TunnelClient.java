@@ -40,6 +40,7 @@ public class TunnelClient {
 			@RequestParam String token,
 			@RequestParam String tunnelToHost,
 			@RequestParam String tunnelToPort) throws URISyntaxException, IOException, InterruptedException {
+		checkEnabled();
 		LOGGER.info("connect");
 		LOGGER.info("publicServer=" + publicServer);
 		LOGGER.info("publicPort=" + publicPort);
@@ -60,6 +61,7 @@ public class TunnelClient {
 	
 	@GetMapping(path = "/delete/{localId}", produces = "text/html")	
 	public String connect(@PathVariable String localId) throws URISyntaxException, IOException, InterruptedException {
+		checkEnabled();
 		service.close(localId);
 		return getUi(null, null, null, null, null);
 	}
@@ -70,6 +72,7 @@ public class TunnelClient {
 			@RequestParam(required = false) String token,
 			@RequestParam(required = false) String tunnelToHost,
 			@RequestParam(required = false) String tunnelToPort) {
+		checkEnabled();
 		LOGGER.info("Show UI");
 		StringBuilder sb = new StringBuilder();
 		sb.append("<HTML>");
