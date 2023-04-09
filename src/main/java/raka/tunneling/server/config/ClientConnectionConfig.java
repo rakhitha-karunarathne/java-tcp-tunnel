@@ -9,6 +9,9 @@ public class ClientConnectionConfig {
 	String id;
 	@Getter
 	@Setter
+	String name = "";
+	@Getter
+	@Setter
 	String serverHost;
 	@Getter
 	@Setter

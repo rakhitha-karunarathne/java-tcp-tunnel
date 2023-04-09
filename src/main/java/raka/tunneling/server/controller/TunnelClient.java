@@ -89,6 +89,7 @@ public class TunnelClient {
 		sb.append("</FORM>");
 		sb.append("<TABLE border='1'>");
 		sb.append("<TR>");
+		sb.append("<TD>Name</TD>");
 		sb.append("<TD>Server Host</TD>");
 		sb.append("<TD>Public Port</TD>");
 		sb.append("<TD>Tunnel To Host</TD>");
@@ -98,6 +99,7 @@ public class TunnelClient {
 		sb.append("</TR>");
 		for (TunnelClientConnection c : service.getList()) {
 			sb.append("<TR>");
+			sb.append("<TD>"+c.getName()+"</TD>");
 			sb.append("<TD>"+c.getServerHost()+"</TD>");
 			sb.append("<TD>"+c.getPublicPort()+"</TD>");
 			sb.append("<TD>"+c.getTunnelToServer()+"</TD>");

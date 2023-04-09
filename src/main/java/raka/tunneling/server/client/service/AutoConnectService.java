@@ -27,6 +27,7 @@ public class AutoConnectService {
 				if(!service.connectionExist(clientConnectionConfig.getId()))
 				{
 					TunnelClientConnection c = new TunnelClientConnection();
+					c.setName(clientConnectionConfig.getName());
 					c.setId(clientConnectionConfig.getId());
 					c.setPublicPort(clientConnectionConfig.getPublicPort());
 					c.setServerHost(clientConnectionConfig.getServerHost());
