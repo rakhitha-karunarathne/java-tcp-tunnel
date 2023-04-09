@@ -75,6 +75,8 @@
 		     <filtering>true</filtering>
 		     <includes>
 		          <include>**/*.properties</include>
+				  <include>**/*.yaml</include>
+				  <include>**/*.yml</include>
 		     </includes>
 			</resource>
 		</resources>
