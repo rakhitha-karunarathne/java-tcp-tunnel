@@ -11,11 +11,15 @@ import raka.tunneling.server.client.threads.AcceptThread;
 public class TunnelClientConnection {
 	@Getter
 	@Setter
+	String id;
+	
+	@Getter
+	@Setter
 	String serverHost;
 	
 	@Getter
 	@Setter
-	String publicPort;
+	int publicPort;
 	
 	@Getter
 	@Setter

@@ -50,7 +50,7 @@ public class TunnelClient {
 		
 		
 		TunnelClientConnection c = new TunnelClientConnection();
-		c.setPublicPort(publicPort);
+		c.setPublicPort(Integer.parseInt(publicPort));
 		c.setServerHost(publicServer);
 		c.setToken(token);
 		c.setTunnelToServer(tunnelToHost);

@@ -1,0 +1,17 @@
+tunneling:
+  server:
+    controlPort: 3000
+    listener:
+      begin: 40000
+      end: 50000
+    token: unsecure
+    timeout: 60000
+    enabled: true
+  client:
+    enabled: true
+    connections:
+      - serverHost: localhost:8080
+        publicPort: 40001
+        token: unsecure
+        tunnelToServer: localhost
+        tunnelToPort: 80 

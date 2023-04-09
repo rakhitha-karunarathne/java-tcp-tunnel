@@ -5,6 +5,7 @@ import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import javax.annotation.PreDestroy;
 
 import org.springframework.stereotype.Service;
 
@@ -32,10 +33,31 @@ public class TunnelClientService {
 	ArrayList<TunnelClientConnection> list = new ArrayList<>();
 	
 	HttpUtil http = new HttpUtil();
+	
+	@PreDestroy
+	public void terminate() {
+		for (TunnelClientConnection tunnelClientConnection : list) {
+			try {
+				this.close(tunnelClientConnection);
+			} catch (URISyntaxException | IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public boolean connectionExist(String id) {
+		for (TunnelClientConnection tunnelClientConnection : list) {
+			if(tunnelClientConnection.getId() != null && tunnelClientConnection.getId().equals(id))
+				return true;
+		}
+		return false;
+	}
+	
 	public void connect(TunnelClientConnection c) throws URISyntaxException, IOException, InterruptedException {
 		
 		OpenRequest request = new OpenRequest();
-		request.setPortNo(Integer.parseInt(c.getPublicPort()));
+		request.setPortNo(c.getPublicPort());
 		request.setToken(c.getToken());
 		OpenResponse response = http.post(c.getServerUrl() + "server/port/", null, request, OpenResponse.class);		
 		c.setPortId(response.getPortId());
