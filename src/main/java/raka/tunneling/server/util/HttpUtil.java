@@ -5,12 +5,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.util.HashMap;
+import org.apache.hc.client5.http.fluent.Request;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -20,7 +21,8 @@ import raka.tunneling.server.dto.Response;
 
 public class HttpUtil {
 	ObjectMapper mapper = new ObjectMapper();
-	
+
+	/*
 	public<T extends Response> T get(String url, HashMap<String,String> params, Class<T> responseClass) throws URISyntaxException, IOException, InterruptedException  {
 		String finalUrl = getFinalUrl(url, params);
 		
@@ -32,10 +34,19 @@ public class HttpUtil {
 		else
 	    	throw new TunnelException(response.statusCode() + "");
 	}
+	*/
 
 	public <T extends Response> T  post(String url, HashMap<String,String> params, Object payload, Class<T> responseClass) throws URISyntaxException, IOException, InterruptedException {
 		String finalUrl = getFinalUrl(url, params);
 		
+		String response = Request.post(finalUrl)
+		.bodyString(mapper.writeValueAsString(payload), ContentType.APPLICATION_JSON)
+	    .execute().returnContent().asString();
+
+		return decodeResponse(responseClass, response);
+
+
+		/*
 		HttpClient client = HttpClient.newHttpClient();
 	    HttpRequest request = HttpRequest.newBuilder().
 	    		uri(new URI(finalUrl))
@@ -48,6 +59,7 @@ public class HttpUtil {
 	    	return decodeResponse(responseClass, response);
 	    else
 	    	throw new TunnelException(response.statusCode() + "");
+	    	*/
 	}
 	
 	private String getFinalUrl(String url, HashMap<String,String> params) throws UnsupportedEncodingException {
@@ -72,9 +84,9 @@ public class HttpUtil {
 		return sb.toString();
 	}
 	
-	private <T extends Response> T decodeResponse(Class<T> responseClass, HttpResponse<String> response)
+	private <T extends Response> T decodeResponse(Class<T> responseClass, String response)
 			throws JsonProcessingException, JsonMappingException {
-		T t = mapper.readValue(response.body(), responseClass) ;
+		T t = mapper.readValue(response, responseClass) ;
 		t.checkError();
 		return t;
 		
