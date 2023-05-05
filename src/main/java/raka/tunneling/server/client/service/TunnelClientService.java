@@ -1,17 +1,21 @@
 package raka.tunneling.server.client.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.annotation.PreDestroy;
+import javax.management.RuntimeErrorException;
 
 import org.springframework.stereotype.Service;
 
 import lombok.Getter;
 import raka.tunneling.server.client.dto.ChannelConnection;
 import raka.tunneling.server.client.dto.TunnelClientConnection;
+import raka.tunneling.server.client.executor.ThreadPreservedExecutor;
 import raka.tunneling.server.client.threads.AcceptThread;
 import raka.tunneling.server.client.threads.ReadThread;
 import raka.tunneling.server.client.threads.WriteThread;
@@ -29,6 +33,8 @@ import raka.tunneling.server.util.HttpUtil;
 
 @Service
 public class TunnelClientService {
+	static Logger LOGGER = Logger.getLogger(TunnelClientService.class.getName());
+	
 	@Getter
 	ArrayList<TunnelClientConnection> list = new ArrayList<>();
 	
@@ -143,7 +149,51 @@ public class TunnelClientService {
 		return response.isValid();
 	}	
 	
-	public void write(ChannelConnection channel, byte[] buffer) throws URISyntaxException, IOException, InterruptedException {
+	
+	public void write(ChannelConnection channel, byte[] buffer)
+	{
+		synchronized(channel.getWriteToClientBuffer())
+		{
+			channel.getWriteToClientBuffer().add(buffer);
+		}
+		
+		asyncFlushWriteBuffer(channel);
+	}
+
+	private void asyncFlushWriteBuffer(ChannelConnection channel) {
+		ThreadPreservedExecutor.getInstance().Execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					byte[] buffer = null;
+					synchronized(channel.getWriteToClientBuffer())
+					{
+						if(channel.getWriteToClientBuffer().size()>0)
+						{
+							ByteArrayOutputStream baos = new ByteArrayOutputStream(1024*128);
+							for (byte[] b : channel.getWriteToClientBuffer()) {
+								baos.write(b);
+							}
+							channel.getWriteToClientBuffer().clear();
+							baos.close();
+							buffer = baos.toByteArray();
+						}
+					}
+					if(buffer != null)
+					{
+						LOGGER.info("Sending Bytes: " + buffer.length);
+						doWrite(channel, buffer);
+					}
+				}
+				catch(Exception ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		});
+	}
+	
+	private void doWrite(ChannelConnection channel, byte[] buffer) throws URISyntaxException, IOException, InterruptedException {
 		WriteRequest request = new WriteRequest();
 		request.setPortPassword(channel.getPort().getPortPassword());
 		request.setChannelPassword(channel.getChannelSecret());

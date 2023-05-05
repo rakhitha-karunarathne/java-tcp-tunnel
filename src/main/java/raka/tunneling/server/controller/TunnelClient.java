@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import raka.tunneling.server.client.dto.TunnelClientConnection;
 import raka.tunneling.server.client.service.TunnelClientService;
-import raka.tunneling.server.config.TunnelConfiguration;
 import raka.tunneling.server.util.TunnelException;
 
 @RestController

@@ -42,6 +42,9 @@ public class ChannelConnection {
 	@Getter	
 	boolean closed = false;
 	
+	@Getter
+	List<byte[]> writeToClientBuffer = new ArrayList<>();
+	
 	private synchronized void createSocket() throws UnknownHostException, IOException {
 		if(socket != null)
 			return;

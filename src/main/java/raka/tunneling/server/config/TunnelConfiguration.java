@@ -40,7 +40,7 @@ public class TunnelConfiguration {
 	
 	@PostConstruct
 	public void init() {
-		LOGGER.info("Timepout: " + serverTimeout);
+		LOGGER.info("Timeout: " + serverTimeout);
 		LOGGER.info("Listener Range Begin: " + listenerRangeBegin);
 		LOGGER.info("Listener Range End: " + listenerRangeEnd);
 	}
