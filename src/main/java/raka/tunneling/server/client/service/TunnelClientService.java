@@ -13,6 +13,7 @@ import javax.management.RuntimeErrorException;
 import org.springframework.stereotype.Service;
 
 import lombok.Getter;
+import raka.tunneling.server.client.dto.BufferData;
 import raka.tunneling.server.client.dto.ChannelConnection;
 import raka.tunneling.server.client.dto.TunnelClientConnection;
 import raka.tunneling.server.client.executor.ThreadPreservedExecutor;
@@ -152,28 +153,33 @@ public class TunnelClientService {
 	
 	public void write(ChannelConnection channel, byte[] buffer)
 	{
+		BufferData b = new BufferData(buffer);
 		synchronized(channel.getWriteToClientBuffer())
-		{
-			channel.getWriteToClientBuffer().add(buffer);
+		{			
+			channel.getWriteToClientBuffer().add(b);
 		}
 		
-		asyncFlushWriteBuffer(channel);
+		asyncFlushWriteBuffer(channel, b.getTime());
 	}
 
-	private void asyncFlushWriteBuffer(ChannelConnection channel) {
+	private void asyncFlushWriteBuffer(ChannelConnection channel, long time) {
 		ThreadPreservedExecutor.getInstance().Execute(new Runnable() {
 			
 			@Override
 			public void run() {
 				try {
-					byte[] buffer = null;
+					Thread.sleep(1);
+					byte[] buffer = null;					
 					synchronized(channel.getWriteToClientBuffer())
 					{
 						if(channel.getWriteToClientBuffer().size()>0)
 						{
+							if(channel.getWriteToClientBuffer().get(channel.getWriteToClientBuffer().size()-1).getTime()>time)
+								return;
+							
 							ByteArrayOutputStream baos = new ByteArrayOutputStream(1024*128);
-							for (byte[] b : channel.getWriteToClientBuffer()) {
-								baos.write(b);
+							for (BufferData b : channel.getWriteToClientBuffer()) {
+								baos.write(b.getBuffer());
 							}
 							channel.getWriteToClientBuffer().clear();
 							baos.close();
